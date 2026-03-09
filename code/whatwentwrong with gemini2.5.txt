@@ -1,0 +1,34 @@
+1️⃣ Tool / Function Handling Differences
+
+From your earlier error:
+
+BadRequestError: ... "Failed to call a function. Please adjust your prompt."
+
+Gemini 2.5 struggled to handle function/tool calls properly (like glob_search or your run_code tool). Its function-calling integration is stricter and more limited compared to Groq or OpenAI models. That means:
+
+Prompts that require dynamic file search, reading CSV, or executing custom Python code may fail silently or return a tool_use_failed.
+
+Gemini 2.5 may reject inputs if it thinks the function signature or parameters are ambiguous.
+
+2️⃣ File / Path Handling
+
+Your earlier error also included:
+
+root_path="./data", its ../data
+
+Gemini 2.5 sometimes cannot resolve relative paths reliably, or expects the file references to be included in a certain way in the function call.
+
+Groq and GPT-OSS-120B are more flexible with local file paths, or they may auto-handle sandboxed file access better.
+
+3️⃣ Input Validation
+
+Gemini 2.5 failed with:
+
+ValidationError: 1 validation error for Schema
+properties.filename Input should be a valid dictionary or object
+
+This suggests Gemini 2.5 was stricter about structured tool input formats (like JSON or dicts).
+
+If your glob_search or run_code tool wasn’t perfectly structured (missing keys, wrong nesting), Gemini 2.5 refused to run it.
+
+GPT-OSS-120B / Groq are more forgiving with slightly misformatted inputs.
